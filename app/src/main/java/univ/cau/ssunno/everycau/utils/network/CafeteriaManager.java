@@ -17,25 +17,19 @@ public class CafeteriaManager {
     }
 
     // 해당 날짜, 해당 타임의 식단 정보
-    public ArrayList<CafeteriaInfo> getMeals(String date, int time){
+    public ArrayList<CafeteriaInfo> getMeals(String date, int time){  // TODO :  파라미터 값에 따른 요청 읽을 수 있도록 수정
         ArrayList<CafeteriaInfo> cafeteriaInfos = new ArrayList<>();
         // TODO : 학교 서버로부터 정보 받아서 리스트 구성
-        ArrayList<MenuInfo> menuInfos = new ArrayList<>();
-        ArrayList<String> menus = new ArrayList<>();
-        menus.add("감자탕");
-        menus.add("김치찌개");
-        menus.add("쌀밥");
-        menuInfos.add(new MenuInfo("한식", "2800원", menus));
-        CafeteriaInfo ci = new CafeteriaInfo(0, 7, "석식 (17:30 - 19:00)", menuInfos);
+        // TODO : 클래스 -> 메서드로 이동
         RequestMealsByDate rmbd = new RequestMealsByDate();
         rmbd.start();
         try {rmbd.join();} catch (Exception e) { e. printStackTrace();}
         for (CafeteriaInfo cis : rmbd.getCafeteriaInfos())
             cafeteriaInfos.add(cis);
-
-        cafeteriaInfos.add(ci);
         return cafeteriaInfos;
     }
+
+    // TODO : 클래스를 Manager 내부 메서드로 이동 및 수정 필요
     class RequestMealsByDate extends Thread {
         private ArrayList<CafeteriaInfo> cafeteriaInfos;
 

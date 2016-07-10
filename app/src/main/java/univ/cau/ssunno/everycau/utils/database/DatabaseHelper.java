@@ -30,13 +30,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO CAFETERIA_LIST " +
                 "VALUES (" + Integer.toString(type) + ", " + Integer.toString(cafeteriaCode) + ", '" +
                 serviceTime+"');");
+        // TODO : 삽입한 Cafeteria의 id 값 찾아서 리턴
+    }
+
+    public void getMealsList(String date, String serviceTime) {
+        // TODO : 날짜, 식사 시간에서 값을 찾아서 list로 리턴
     }
 
     public void insertMenu(int cafeteriaId, String style, String price){
-
+        // TODO : Cafeteria에 속하는 메뉴 (한식, 중식, 양식 등)
+        // TODO : 삽입한 Menu의 id 값 찾아서 리턴
     }
 
     public void insertDish(int menuId, String dish){
-
+        // TODO : Menu에 속하는 식단 (밥, 김치 등)
     }
 }

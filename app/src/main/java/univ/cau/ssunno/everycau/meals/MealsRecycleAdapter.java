@@ -32,7 +32,6 @@ public class MealsRecycleAdapter extends RecyclerView.Adapter<MealsRecycleAdapte
 
     @Override
     public void onBindViewHolder(MealsViewHolder holder, int position) {
-        // TODO : Meals 내부 카드에 컨텐츠 연결
         holder.name.setText(this.cafeteriaInfos.get(position).getName());
         holder.time.setText(this.cafeteriaInfos.get(position).getServiceTime());
         holder.dishAdapter.setMenuInfos(this.cafeteriaInfos.get(position).getMenus());
