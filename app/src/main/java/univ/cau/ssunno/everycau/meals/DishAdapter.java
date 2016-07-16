@@ -36,7 +36,7 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.DishViewHolder
 
     @Override
     public void onBindViewHolder(DishViewHolder holder, int position) {
-        holder.dishType.setText(this.menuInfos.get(position).getType());
+        holder.dishType.setText(this.menuInfos.get(position).getStyle());
         holder.dishPrice.setText(this.menuInfos.get(position).getPrice());
         while (!holder.dishs.isEmpty()) holder.dishs.remove(0);
         for (String menu : this.menuInfos.get(position).getDishs()) holder.dishs.add(menu);

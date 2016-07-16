@@ -3,22 +3,20 @@ package univ.cau.ssunno.everycau.utils.network;
 import java.util.ArrayList;
 
 public class CafeteriaInfo {
-    public static final int SEOUL = 0;
-    public static final int ANSUNG = 1;
     private int campusType; // 0 : 서울, 1 : 안성
-    private int cafeteriaValue;
+    private int cafeteriaCode;
     private String serviceTime;
     private ArrayList<MenuInfo> menus;
 
-    public CafeteriaInfo(int campusType, int cafeteriaValue, String serviceTime, ArrayList<MenuInfo> menus) {
+    public CafeteriaInfo(int campusType, int cafeteriaCode, String serviceTime, ArrayList<MenuInfo> menus) {
         this.campusType = campusType;
-        this.cafeteriaValue = cafeteriaValue;
+        this.cafeteriaCode = cafeteriaCode;
         this.serviceTime = serviceTime;
         this.menus = menus;
     }
 
     public String getName() {
-        switch (cafeteriaValue){
+        switch (cafeteriaCode){
             case 2:
                 return "슬기마루 (205관 1층)";
             case 3:
@@ -36,6 +34,10 @@ public class CafeteriaInfo {
             default:
                 return "굶기";
         }
+    }
+
+    public int getCafeteriaCode() {
+        return cafeteriaCode;
     }
 
     public String getServiceTime() {

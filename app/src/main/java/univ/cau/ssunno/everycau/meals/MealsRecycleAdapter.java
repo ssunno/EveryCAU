@@ -1,5 +1,6 @@
 package univ.cau.ssunno.everycau.meals;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -20,8 +21,8 @@ public class MealsRecycleAdapter extends RecyclerView.Adapter<MealsRecycleAdapte
     public MealsRecycleAdapter() {
         this.cafeteriaManager = new CafeteriaManager();
         this.cafeteriaInfos = new ArrayList<>();
-        // TODO : 설정 버튼 만든다음 UI 업데이트 관련 메서드로 옮겨야함
-        for ( CafeteriaInfo ci : cafeteriaManager.getMeals("", 1))
+        // TODO : getMeals 메서드 파라미터를 변수로 변경
+        for ( CafeteriaInfo ci : cafeteriaManager.getMeals("20160718"))
             this.cafeteriaInfos.add(ci);
     }
 

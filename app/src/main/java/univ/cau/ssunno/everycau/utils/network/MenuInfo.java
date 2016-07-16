@@ -3,17 +3,17 @@ package univ.cau.ssunno.everycau.utils.network;
 import java.util.ArrayList;
 
 public class MenuInfo {
-    private String type;
+    private String style;
     private String price;
     private ArrayList<String> dishs;
-    public MenuInfo(String type, String price, ArrayList<String> dishs) {
-        this.type = type;
+    public MenuInfo(String style, String price, ArrayList<String> dishs) {
+        this.style = style;
         this.price = price;
         this.dishs = dishs;
     }
 
-    public String getType() {
-        return type;
+    public String getStyle() {
+        return style;
     }
 
     public String getPrice() {
