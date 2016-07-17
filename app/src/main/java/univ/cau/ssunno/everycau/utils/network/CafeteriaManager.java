@@ -7,7 +7,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.spec.ECField;
 import java.util.ArrayList;
 
 import univ.cau.ssunno.everycau.utils.database.DatabaseHelper;
@@ -19,15 +18,19 @@ public class CafeteriaManager {
 
     // 해당 날짜, 해당 타임의 식단 정보
     public ArrayList<CafeteriaInfo> getMeals(String date){  // TODO :  파라미터 값에 따른 요청 읽을 수 있도록 수정
-        // TODO : 학교 서버로부터 정보 받아서 리스트 구성
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
                     DatabaseHelper db = DatabaseHelper.getInstance(null);
-                    ArrayList<CafeteriaInfo> cafeteriaInfos =requestMealsByCafeteria("20160718", 8);
+                    ArrayList<CafeteriaInfo> cafeteriaInfos = new ArrayList<>();
+                    for (CafeteriaInfo ci : requestMealsByCafeteria("20160718", 2))
+                        cafeteriaInfos.add(ci);
+                    for (CafeteriaInfo ci : requestMealsByCafeteria("20160718", 8))
+                        cafeteriaInfos.add(ci);
+
                     for (CafeteriaInfo ci : cafeteriaInfos){
-                        int cafeteria = db.insertCafeteria(0, ci.getCafeteriaCode(), "20160718", ci.getServiceTime());
+                        int cafeteria = db.insertCafeteria(0, ci.getCafeteriaCode(), "20160718", ci.getQuarter(), ci.getServiceTime());
                         for (MenuInfo mi : ci.getMenus()) {
                             int menu = db.insertMenu(cafeteria, mi.getStyle(), mi.getPrice());
                             for (String dish : mi.getDishs())
@@ -38,7 +41,7 @@ public class CafeteriaManager {
             }
         }).start();
         DatabaseHelper dbHelper = DatabaseHelper.getInstance(null);
-        return dbHelper.getMealsFromDB(0, date);
+        return dbHelper.getMealsFromDB(0, date, 2);
     }
 
     private ArrayList<CafeteriaInfo> requestMealsByCafeteria(String date, int cafeteriaValue) throws Exception{
@@ -66,6 +69,7 @@ public class CafeteriaManager {
         String tagName = null, serviceTime = "", type = null, price = null;
         ArrayList<MenuInfo> menuInfos = new ArrayList<>();
         ArrayList<String> dishList = new ArrayList<>();
+        int quarter = 0;
         while (eventType != XmlPullParser.END_DOCUMENT){
             switch (eventType){
                 case XmlPullParser.START_TAG:
@@ -78,10 +82,11 @@ public class CafeteriaManager {
                     switch (tagName){
                         case "raw":
                             if( type != null && price != null && !serviceTime.equals("")) {
+                                dishList.remove(0);
                                 menuInfos.add(new MenuInfo(type, price, dishList));
                                 type = null;
                                 price = null;
-                                cafeteriaInfos.add(new CafeteriaInfo(0, cafeteriaValue, serviceTime, menuInfos));
+                                cafeteriaInfos.add(new CafeteriaInfo(0, cafeteriaValue, quarter, serviceTime, menuInfos));
                                 serviceTime ="";
                                 menuInfos = new ArrayList<>();
                                 dishList = new ArrayList<>();
@@ -91,7 +96,16 @@ public class CafeteriaManager {
                         case "menunm":
                             String[] menunm = xmlPullParser.getText().split("\\(");
                             serviceTime += menunm[0] + " ";
-                            type = menunm[1].split("\\)")[0];
+                            switch(menunm[0]) {
+                                case "조식": quarter = 1; break;
+                                case "중식":case "특식": quarter = 2; break;
+                                case "석식": quarter = 3; break;
+                                default: quarter = 0; break;
+                            }
+                            // TODO : 어떤 식당은 A(B) 에서 A가 타입 인데, 어디는 B가 타입이라서 맞춰야됨
+
+                            try {type = menunm[1].split("\\)")[0];}
+                            catch (ArrayIndexOutOfBoundsException e) { type = menunm[0]; }
                             break;
                         case "tm":
                             serviceTime += "(" + xmlPullParser.getText() + ")";

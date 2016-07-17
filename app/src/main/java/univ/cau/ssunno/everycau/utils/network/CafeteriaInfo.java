@@ -5,12 +5,14 @@ import java.util.ArrayList;
 public class CafeteriaInfo {
     private int campusType; // 0 : 서울, 1 : 안성
     private int cafeteriaCode;
+    private int quarter;
     private String serviceTime;
     private ArrayList<MenuInfo> menus;
 
-    public CafeteriaInfo(int campusType, int cafeteriaCode, String serviceTime, ArrayList<MenuInfo> menus) {
+    public CafeteriaInfo(int campusType, int cafeteriaCode, int quarter, String serviceTime, ArrayList<MenuInfo> menus) {
         this.campusType = campusType;
         this.cafeteriaCode = cafeteriaCode;
+        this.quarter = quarter;
         this.serviceTime = serviceTime;
         this.menus = menus;
     }
@@ -38,6 +40,10 @@ public class CafeteriaInfo {
 
     public int getCafeteriaCode() {
         return cafeteriaCode;
+    }
+
+    public int getQuarter() {
+        return quarter;
     }
 
     public String getServiceTime() {

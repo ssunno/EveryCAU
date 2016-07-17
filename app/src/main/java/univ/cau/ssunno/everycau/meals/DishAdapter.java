@@ -45,7 +45,6 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.DishViewHolder
     }
 
     public void setListViewHeightBasedOnItems(ListView listView) {
-
         // Get list adpter of listview;
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null)  return;
@@ -53,9 +52,11 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.DishViewHolder
         // Get total height of all items.
         int totalItemsHeight = 0;
         for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
-            View item = listAdapter.getView(itemPos, null, listView);
+            TextView item = (TextView)listAdapter.getView(itemPos, null, listView);
             item.measure(0, 0);
             totalItemsHeight += item.getMeasuredHeight();
+            if (item.getText().length() > 13)
+                totalItemsHeight += (item.getMeasuredHeight() - item.getPaddingTop() - item.getPaddingBottom());
         }
         // Get total height of all item dividers.
         int totalDividersHeight = listView.getDividerHeight() *  (numberOfItems - 1);
@@ -85,7 +86,7 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.DishViewHolder
             verticalLine = (ImageView)itemView.findViewById(R.id.meals_card_dish_verticalline);
             dishList = (ListView) itemView.findViewById(R.id.meals_card_dish_listview);
             dishs = new ArrayList<>();
-            dishsAdapter = new ArrayAdapter<String>(itemView.getContext(), R.layout.simple_list_item, dishs);
+            dishsAdapter = new ArrayAdapter<>(itemView.getContext(), R.layout.simple_list_item, dishs);
             dishList.setAdapter(dishsAdapter);
             dishList.setDivider(null);
         }
