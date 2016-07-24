@@ -3,21 +3,19 @@ package univ.cau.ssunno.everycau.utils.network;
 import java.util.ArrayList;
 
 public class CafeteriaInfo {
-    private int campusType; // 0 : 서울, 1 : 안성
     private int cafeteriaCode;
-    private int quarter;
-    private String serviceTime;
-    private ArrayList<MenuInfo> menus;
+    private String dishStyle, calorie, price;
+    private ArrayList<String> dishList;
 
-    public CafeteriaInfo(int campusType, int cafeteriaCode, int quarter, String serviceTime, ArrayList<MenuInfo> menus) {
-        this.campusType = campusType;
+    public CafeteriaInfo(int cafeteriaCode, String dishStyle, String calorie, String price, ArrayList<String> dishList) {
         this.cafeteriaCode = cafeteriaCode;
-        this.quarter = quarter;
-        this.serviceTime = serviceTime;
-        this.menus = menus;
+        this.dishStyle = dishStyle;
+        this.calorie = calorie;
+        this.price = price;
+        this.dishList = dishList;
     }
 
-    public String getName() {
+    public String getCafeteriaName() {
         switch (cafeteriaCode){
             case 2:
                 return "슬기마루 (205관 1층)";
@@ -38,19 +36,23 @@ public class CafeteriaInfo {
         }
     }
 
+    public String getPrice() {
+        return price;
+    }
+
     public int getCafeteriaCode() {
         return cafeteriaCode;
     }
 
-    public int getQuarter() {
-        return quarter;
+    public String getDishStyle() {
+        return dishStyle;
     }
 
-    public String getServiceTime() {
-        return serviceTime;
+    public String getCalorie() {
+        return calorie;
     }
 
-    public ArrayList<MenuInfo> getMenus() {
-        return menus;
+    public ArrayList<String> getDishList() {
+        return dishList;
     }
 }

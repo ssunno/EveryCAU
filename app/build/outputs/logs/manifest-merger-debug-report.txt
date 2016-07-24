@@ -62,7 +62,7 @@ ADDED from /Users/sun/AndroidStudioProjects/EveryCAU/app/src/main/AndroidManifes
 activity#univ.cau.ssunno.everycau.MainTabActivity
 ADDED from /Users/sun/AndroidStudioProjects/EveryCAU/app/src/main/AndroidManifest.xml:18:9-21:59
 	android:label
-		ADDED from /Users/sun/AndroidStudioProjects/EveryCAU/app/src/main/AndroidManifest.xml:20:13-60
+		ADDED from /Users/sun/AndroidStudioProjects/EveryCAU/app/src/main/AndroidManifest.xml:20:13-29
 	android:theme
 		ADDED from /Users/sun/AndroidStudioProjects/EveryCAU/app/src/main/AndroidManifest.xml:21:13-56
 	android:name

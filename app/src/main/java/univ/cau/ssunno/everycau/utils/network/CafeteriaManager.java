@@ -1,5 +1,8 @@
 package univ.cau.ssunno.everycau.utils.network;
 
+
+import android.util.Log;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -9,6 +12,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import univ.cau.ssunno.everycau.utils.database.Constant;
 import univ.cau.ssunno.everycau.utils.database.DatabaseHelper;
 
 public class CafeteriaManager {
@@ -17,34 +21,24 @@ public class CafeteriaManager {
     }
 
     // 해당 날짜, 해당 타임의 식단 정보
-    public ArrayList<CafeteriaInfo> getMeals(String date){  // TODO :  파라미터 값에 따른 요청 읽을 수 있도록 수정
+    public ArrayList<CafeteriaInfo> getMeals(String date){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
-                    DatabaseHelper db = DatabaseHelper.getInstance(null);
-                    ArrayList<CafeteriaInfo> cafeteriaInfos = new ArrayList<>();
-                    for (CafeteriaInfo ci : requestMealsByCafeteria("20160718", 2))
-                        cafeteriaInfos.add(ci);
-                    for (CafeteriaInfo ci : requestMealsByCafeteria("20160718", 8))
-                        cafeteriaInfos.add(ci);
-
-                    for (CafeteriaInfo ci : cafeteriaInfos){
-                        int cafeteria = db.insertCafeteria(0, ci.getCafeteriaCode(), "20160718", ci.getQuarter(), ci.getServiceTime());
-                        for (MenuInfo mi : ci.getMenus()) {
-                            int menu = db.insertMenu(cafeteria, mi.getStyle(), mi.getPrice());
-                            for (String dish : mi.getDishs())
-                                db.insertDish(menu, dish);
-                        }
-                    }
+                    syncCafeteria("20160718", Constant.CAFE_DORMITORY);
+                    syncCafeteria("20160718", Constant.CAFE_SEULKI);
                 } catch ( Exception e) {e.printStackTrace();}
             }
         }).start();
         DatabaseHelper dbHelper = DatabaseHelper.getInstance(null);
-        return dbHelper.getMealsFromDB(0, date, 2);
+        ArrayList<CafeteriaInfo> meals;
+        meals = dbHelper.getMenusFromDB(Constant.CAMPUS_SEOUL, Constant.QUARTER_LUNCH, date);
+        for (CafeteriaInfo ci : dbHelper.getMenusFromDB(Constant.CAMPUS_SEOUL, Constant.QUARTER_ALLDAY, date)) meals.add(ci);
+        return meals;
     }
 
-    private ArrayList<CafeteriaInfo> requestMealsByCafeteria(String date, int cafeteriaValue) throws Exception{
+    private void syncCafeteria(String date, int code) throws Exception{
         URL url = new URL("http://cautis.cau.ac.kr/SMT/tis/sMwsFoo010/selectList.do");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
@@ -54,7 +48,7 @@ public class CafeteriaManager {
         // 데이터
         String param = URLEncoder.encode("today", "UTF-8") + "=" + URLEncoder.encode(date, "UTF-8");
         param += "&" + URLEncoder.encode("calvalue", "UTF-8") + "=" + URLEncoder.encode("0", "UTF-8");
-        param += "&" + URLEncoder.encode("store", "UTF-8") + "=" + URLEncoder.encode(String.format("%02d", cafeteriaValue), "UTF-8");
+        param += "&" + URLEncoder.encode("store", "UTF-8") + "=" + URLEncoder.encode(String.format("%02d", code), "UTF-8");
 
         // 전송
         OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
@@ -65,9 +59,7 @@ public class CafeteriaManager {
         xmlPullParser.setInput(conn.getInputStream(), "UTF-8");
 
         int eventType = xmlPullParser.getEventType();
-        ArrayList<CafeteriaInfo> cafeteriaInfos = new ArrayList<>();
-        String tagName = null, serviceTime = "", type = null, price = null;
-        ArrayList<MenuInfo> menuInfos = new ArrayList<>();
+        String tagName = null, style = null, price = null, calorie;
         ArrayList<String> dishList = new ArrayList<>();
         int quarter = 0;
         while (eventType != XmlPullParser.END_DOCUMENT){
@@ -81,34 +73,48 @@ public class CafeteriaManager {
                 case XmlPullParser.TEXT:
                     switch (tagName){
                         case "raw":
-                            if( type != null && price != null && !serviceTime.equals("")) {
+                            if( style != null && price != null) {
+                                calorie = dishList.get(0);
                                 dishList.remove(0);
-                                menuInfos.add(new MenuInfo(type, price, dishList));
-                                type = null;
+
+                                DatabaseHelper dbHelper = DatabaseHelper.getInstance(null);
+                                int c_id = dbHelper.insertCafeteria(getCampusByCafeteria(code), code, date, quarter);
+                                int m_id = dbHelper.insertMenu(c_id, style, price, calorie);
+                                for (String dish : dishList) dbHelper.insertDish(m_id, dish);
+
+                                style = null;
                                 price = null;
-                                cafeteriaInfos.add(new CafeteriaInfo(0, cafeteriaValue, quarter, serviceTime, menuInfos));
-                                serviceTime ="";
-                                menuInfos = new ArrayList<>();
                                 dishList = new ArrayList<>();
                             }
                             // new menu
                             break;
                         case "menunm":
                             String[] menunm = xmlPullParser.getText().split("\\(");
-                            serviceTime += menunm[0] + " ";
+                            try{
                             switch(menunm[0]) {
-                                case "조식": quarter = 1; break;
-                                case "중식":case "특식": quarter = 2; break;
-                                case "석식": quarter = 3; break;
-                                default: quarter = 0; break;
+                                // 앞쪽이 쿼터인 경우 -> 뒤쪽은 스타일
+                                case "조식": quarter = Constant.QUARTER_BREAKFAST; style = cleanStr(menunm[1]); break;
+                                case "중식": quarter = Constant.QUARTER_LUNCH; style = cleanStr(menunm[1]); break;
+                                case "석식":case "학생석식": quarter = Constant.QUARTER_DINNER; style = cleanStr(menunm[1]); break;
+                                // 뒤쪽이 쿼터인 경우 -> 앞족은 스타일
+                                default:
+                                    switch(cleanStr(menunm[1])) {
+                                        case "조식": quarter = Constant.QUARTER_BREAKFAST; style = menunm[0]; break;
+                                        case "중식": quarter = Constant.QUARTER_LUNCH; style = menunm[0]; break;
+                                        case "석식":case "학생석식": quarter = Constant.QUARTER_DINNER; style = menunm[0]; break;
+                                        default: quarter = Constant.QUARTER_ALLDAY; style = cleanStr(menunm[1]); break;
+                                    }
+                            }} catch (ArrayIndexOutOfBoundsException e) { // 하나만 기재되는 경우
+                                switch(cleanStr(menunm[0])) {
+                                    case "조식": quarter = Constant.QUARTER_BREAKFAST; style = menunm[0]; break;
+                                    case "중식": quarter = Constant.QUARTER_LUNCH; style = menunm[0]; break;
+                                    case "석식":case "학생석식": quarter = Constant.QUARTER_DINNER; style = menunm[0]; break;
+                                    default: quarter = Constant.QUARTER_ALLDAY; style = menunm[0]; break;
+                                }
                             }
-                            // TODO : 어떤 식당은 A(B) 에서 A가 타입 인데, 어디는 B가 타입이라서 맞춰야됨
-
-                            try {type = menunm[1].split("\\)")[0];}
-                            catch (ArrayIndexOutOfBoundsException e) { type = menunm[0]; }
                             break;
-                        case "tm":
-                            serviceTime += "(" + xmlPullParser.getText() + ")";
+                        case "tm": // 시간
+                            // serviceTime += "(" + xmlPullParser.getText() + ")";
                             break;
                         case "amt": // 가격
                             price = xmlPullParser.getText();
@@ -124,7 +130,29 @@ public class CafeteriaManager {
             }
             eventType = xmlPullParser.next();
         }
-        return cafeteriaInfos;
+    }
+
+    private String cleanStr(String str) {
+        return str.split("\\)")[0];
+    }
+
+    private int getCampusByCafeteria(int cafeteria) {
+        int campus;
+        switch(cafeteria) {
+            case Constant.CAFE_SEULKI:
+            case Constant.CAFE_CHARM:
+            case Constant.CAFE_STUDENT:
+            case Constant.CAFE_EMPOLYEE:
+            case Constant.CAFE_DORMITORY:
+            case Constant.CAFE_UNIVERSITY:
+            case Constant.CAFE_NEW_DORMITORY:
+                campus = Constant.CAMPUS_SEOUL;
+                break;
+            default:
+                campus = Constant.CAMPUS_ANSUNG;
+                break;
+        }
+        return campus;
     }
 }
 

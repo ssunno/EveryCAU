@@ -40,31 +40,8 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.DishViewHolder
         holder.dishPrice.setText(this.menuInfos.get(position).getPrice());
         while (!holder.dishs.isEmpty()) holder.dishs.remove(0);
         for (String menu : this.menuInfos.get(position).getDishs()) holder.dishs.add(menu);
-        setListViewHeightBasedOnItems(holder.dishList);
+        // setListViewHeightBasedOnItems(holder.dishList);
         holder.dishsAdapter.notifyDataSetChanged();
-    }
-
-    public void setListViewHeightBasedOnItems(ListView listView) {
-        // Get list adpter of listview;
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null)  return;
-        int numberOfItems = listAdapter.getCount();
-        // Get total height of all items.
-        int totalItemsHeight = 0;
-        for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
-            TextView item = (TextView)listAdapter.getView(itemPos, null, listView);
-            item.measure(0, 0);
-            totalItemsHeight += item.getMeasuredHeight();
-            if (item.getText().length() > 13)
-                totalItemsHeight += (item.getMeasuredHeight() - item.getPaddingTop() - item.getPaddingBottom());
-        }
-        // Get total height of all item dividers.
-        int totalDividersHeight = listView.getDividerHeight() *  (numberOfItems - 1);
-        // Set list height.
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalItemsHeight + totalDividersHeight;
-        listView.setLayoutParams(params);
-        listView.requestLayout();
     }
 
     @Override
@@ -81,7 +58,7 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.DishViewHolder
         public ArrayList<String> dishs;
         public DishViewHolder(View itemView) {
             super(itemView);
-            dishType = (TextView)itemView.findViewById(R.id.meals_card_dish_type);
+            dishType = (TextView)itemView.findViewById(R.id.meals_card_dish_style);
             dishPrice = (TextView)itemView.findViewById(R.id.meals_card_dish_price);
             verticalLine = (ImageView)itemView.findViewById(R.id.meals_card_dish_verticalline);
             dishList = (ListView) itemView.findViewById(R.id.meals_card_dish_listview);

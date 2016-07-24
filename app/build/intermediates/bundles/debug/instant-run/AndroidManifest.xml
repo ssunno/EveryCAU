@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="15"
+        android:minSdkVersion="21"
         android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -28,7 +28,7 @@
         </activity>
         <activity
             android:name="univ.cau.ssunno.everycau.MainTabActivity"
-            android:label="@string/title_activity_main_tab"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

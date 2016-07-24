@@ -36,12 +36,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // quarter : 분기 표시, 0: 종일, 1:조식, 2:중식, 3:석식
-        db.execSQL("CREATE TABLE CAFETERIA_LIST( cl_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "type INTEGER, code INTEGER, date TEXT, quarter INTEGER, service_time TEXT);");
-        db.execSQL("CREATE TABLE MENU_LIST( menu_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "cl_id INTEGER, style TEXT, price TEXT, FOREIGN KEY (cl_id) REFERENCES CAFETERIA_LIST (cl_id));");
-        db.execSQL("CREATE TABLE DISH_LIST( dish_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "menu_id INTEGER, dish TEXT, FOREIGN KEY (menu_id) REFERENCES MENU_LIST (menu_id));");
+        db.execSQL("CREATE TABLE CAFETERIA( c_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "campus INTEGER, code INTEGER, date TEXT, quarter INTEGER);");
+        db.execSQL("CREATE TABLE MENUS( m_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "c_id INTEGER, style TEXT, price TEXT, calorie INTEGER, FOREIGN KEY (c_id) REFERENCES CAFETERIA (c_id));");
+        db.execSQL("CREATE TABLE DISH( d_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "m_id INTEGER, dish TEXT, FOREIGN KEY (m_id) REFERENCES MENUS (m_id));");
     }
 
     @Override
@@ -49,54 +49,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public int insertCafeteria(int type, int cafeteriaCode, String date, int quarter, String serviceTime){
+    public int insertCafeteria(int campus, int code, String date, int quarter){
         // 중복된 cafeteria 정보가 없는 경우 insert
-        db.execSQL("INSERT INTO CAFETERIA_LIST(type, code, date, quarter, service_time) " +
-                "SELECT " + Integer.toString(type) + ", " + Integer.toString(cafeteriaCode) + ", '" + date + "', " + quarter +", '" + serviceTime + "' " +
-                "WHERE NOT EXISTS (SELECT * FROM CAFETERIA_LIST WHERE (type=" + Integer.toString(type) +
-                " AND code=" + Integer.toString(cafeteriaCode) + " AND date='" + date + "' AND quarter=" + quarter + "));");
+        db.execSQL("INSERT INTO CAFETERIA(campus, code, date, quarter) " +
+                "SELECT " + Integer.toString(campus) + ", " + Integer.toString(code) + ", '" + date + "', " + quarter +
+                " WHERE NOT EXISTS (SELECT * FROM CAFETERIA WHERE (campus=" + Integer.toString(campus) +
+                " AND code=" + Integer.toString(code) + " AND date='" + date + "' AND quarter=" + quarter + "));");
         // 삽입한 Cafeteria의 id 값 리턴
-        Cursor cursor = db.rawQuery("SELECT cl_id FROM CAFETERIA_LIST WHERE type=" + Integer.toString(type) +
-                " AND code=" + Integer.toString(cafeteriaCode) + " AND quarter=" + quarter + ";", null);
+        Cursor cursor = db.rawQuery("SELECT c_id FROM CAFETERIA WHERE campus=" + Integer.toString(campus) +
+                " AND code=" + Integer.toString(code) + " AND date='" + date + "' AND quarter=" + quarter + ";", null);
         cursor.moveToNext();
         int cafeteriaId = cursor.getInt(0);
         cursor.close();
         return cafeteriaId;
     }
-
-    public ArrayList<CafeteriaInfo> getMealsFromDB(int campusType, String date, int quarter) {
-        // TODO : 날짜, 식사 시간에서 값을 찾아서 list로 리턴
-        Cursor ciCursor = db.rawQuery("SELECT cl_id, code, service_time FROM CAFETERIA_LIST WHERE type=" + campusType + " AND date='" + date + "' AND quarter=" + quarter + ";", null);
-        ArrayList<CafeteriaInfo> cafeteriaInfos = new ArrayList<>();
-        ArrayList<MenuInfo> menuInfos = new ArrayList<>();
-        int ciCode = -1;
-        while (ciCursor.moveToNext()) {
-            Cursor menuCursor = db.rawQuery("SELECT menu_id, style, price FROM MENU_LIST WHERE cl_id=" + ciCursor.getInt(0) + ";",null);
-            while (menuCursor.moveToNext()) {
-                Cursor dishCursor = db.rawQuery("SELECT dish FROM DISH_LIST WHERE menu_id=" + menuCursor.getInt(0) + ";", null);
-                ArrayList<String> dishList = new ArrayList<>();
-                while (dishCursor.moveToNext())
-                    dishList.add(dishCursor.getString(0));
-                dishCursor.close();
-                menuInfos.add(new MenuInfo(menuCursor.getString(1), menuCursor.getString(2), dishList));
-            }
-            menuCursor.close();
-            if (ciCode != ciCursor.getInt(1)) {
-                cafeteriaInfos.add(new CafeteriaInfo(campusType, ciCursor.getInt(1), quarter, ciCursor.getString(2), menuInfos));
-                menuInfos = new ArrayList<>();
-            }
-        }
-        ciCursor.close();
-        return cafeteriaInfos;
-    }
-
-    public int insertMenu(int cafeteriaId, String style, String price){
+    public int insertMenu(int cafeteriaId, String style, String price, String calorie){
         // Cafeteria에 속하는 메뉴 (한식, 중식, 양식 등)
-        db.execSQL("INSERT INTO MENU_LIST(cl_id, style, price) " +
-                "SELECT " + Integer.toString(cafeteriaId) + ", '" + style + "', '" + price + "' " +
-                "WHERE NOT EXISTS (SELECT * FROM MENU_LIST WHERE (cl_id=" + Integer.toString(cafeteriaId) + " AND style='" + style + "' AND price='" + price + "'));");
+        db.execSQL("INSERT INTO MENUS(c_id, style, price, calorie) " +
+                "SELECT " + Integer.toString(cafeteriaId) + ", '" + style + "', '" + price + "', '" + calorie + "' " +
+                "WHERE NOT EXISTS (SELECT * FROM MENUS WHERE (c_id=" + Integer.toString(cafeteriaId) +
+                " AND style='" + style + "' AND price='" + price + "' AND calorie='" + calorie + "'));");
         // 삽입한 Menu의 id 값 찾아서 리턴
-        Cursor cursor = db.rawQuery("SELECT menu_id FROM MENU_LIST WHERE cl_id=" + Integer.toString(cafeteriaId) + " AND style='" + style + "' AND price='" + price + "';", null);
+        Cursor cursor = db.rawQuery("SELECT m_id FROM MENUS WHERE c_id=" + Integer.toString(cafeteriaId) +
+                " AND style='" + style + "' AND price='" + price + "' AND calorie='" + calorie + "';", null);
         cursor.moveToNext();
         int menuId = cursor.getInt(0);
         cursor.close();
@@ -105,8 +80,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void insertDish(int menuId, String dish){
         // Menu에 속하는 식단 (밥, 김치 등)
-        db.execSQL("INSERT INTO DISH_LIST(menu_id, dish) " +
+        db.execSQL("INSERT INTO DISH(m_id, dish) " +
                 "SELECT " + Integer.toString(menuId) + ", '" + dish + "' " +
-                "WHERE NOT EXISTS (SELECT * FROM DISH_LIST WHERE (menu_id=" + Integer.toString(menuId) + " AND dish='" + dish + "'));");
+                "WHERE NOT EXISTS (SELECT * FROM DISH WHERE (m_id=" + Integer.toString(menuId) + " AND dish='" + dish + "'));");
+    }
+
+    public ArrayList<CafeteriaInfo> getMenusFromDB(int campus, int quarter, String date) {
+        Cursor cafeteriaCursor = db.rawQuery("SELECT c_id, code FROM CAFETERIA WHERE campus=" + campus + " AND date='" + date + "' AND quarter=" + quarter + ";", null);
+        ArrayList<CafeteriaInfo> cafeteriaInfos = new ArrayList<>();
+
+        while (cafeteriaCursor.moveToNext()) {
+            Cursor menuCursor = db.rawQuery("SELECT m_id, style, calorie, price FROM MENUS WHERE c_id=" + Integer.toString(cafeteriaCursor.getInt(0)) + ";", null);
+            while (menuCursor.moveToNext()) {
+                Cursor dishCursor = db.rawQuery("SELECT dish FROM DISH WHERE m_id=" + Integer.toString(menuCursor.getInt(0)) + ";", null);
+                ArrayList<String> dishList = new ArrayList<>();
+                while (dishCursor.moveToNext()) dishList.add(dishCursor.getString(0));
+                dishCursor.close();
+                cafeteriaInfos.add(new CafeteriaInfo(cafeteriaCursor.getInt(1), menuCursor.getString(1), menuCursor.getString(2), menuCursor.getString(3), dishList));
+            }
+            menuCursor.close();
+        }
+        cafeteriaCursor.close();
+        return cafeteriaInfos;
     }
 }
