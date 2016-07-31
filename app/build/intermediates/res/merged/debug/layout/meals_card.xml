@@ -19,11 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:id="@+id/meals_card_logo"
-                android:background="@color/colorPrimary" />
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
@@ -73,27 +68,11 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <ListView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
-
-            <ImageView
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:id="@+id/meals_card_vertical_line"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:background="@color/colorAccent" />
-
-            <ListView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/meals_card_dish_list" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:id="@+id/meals_card_dish_list" />
 
     </LinearLayout>
 

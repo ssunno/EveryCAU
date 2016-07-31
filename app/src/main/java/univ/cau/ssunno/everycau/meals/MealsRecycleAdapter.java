@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import univ.cau.ssunno.everycau.R;
+import univ.cau.ssunno.everycau.utils.database.Constant;
 import univ.cau.ssunno.everycau.utils.network.CafeteriaInfo;
 import univ.cau.ssunno.everycau.utils.network.CafeteriaManager;
 
@@ -24,7 +25,7 @@ public class MealsRecycleAdapter extends RecyclerView.Adapter<MealsRecycleAdapte
         this.cafeteriaManager = new CafeteriaManager();
         this.cafeteriaInfos = new ArrayList<>();
         // TODO : getMeals 메서드 파라미터를 변수로 변경
-        for ( CafeteriaInfo ci : cafeteriaManager.getMeals("20160718"))
+        for ( CafeteriaInfo ci : cafeteriaManager.getMeals(Constant.getCurrentDate(), Constant.getCurrentTime()))
             this.cafeteriaInfos.add(ci);
     }
 
@@ -53,15 +54,14 @@ public class MealsRecycleAdapter extends RecyclerView.Adapter<MealsRecycleAdapte
     }
 
     public static class MealsViewHolder extends RecyclerView.ViewHolder {
-        public ImageView cafeteriaLogo, verticalLine;
+        public ImageView cafeteriaLogo;
         public TextView cafeteriaName, dishStyle, calorie, price;
         public ListView dishList;
         public ArrayAdapter<String> dishAdapter;
         public ArrayList<String> dishContainer;
         public MealsViewHolder(View itemView) {
             super(itemView);
-            cafeteriaLogo   = (ImageView)itemView.findViewById(R.id.meals_card_logo);
-            verticalLine    = (ImageView)itemView.findViewById(R.id.meals_card_vertical_line);
+            // cafeteriaLogo   = (ImageView)itemView.findViewById(R.id.meals_card_logo);
             cafeteriaName   = (TextView)itemView.findViewById(R.id.meals_card_title);
             dishStyle       = (TextView)itemView.findViewById(R.id.meals_card_dish_style);
             calorie         = (TextView)itemView.findViewById(R.id.meals_card_calorie);

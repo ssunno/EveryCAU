@@ -4,33 +4,45 @@
     api-level="23"
     density="xxxhdpi"
     format="7"
-    timestamp="874130738027043" >
+    timestamp="11144356326028" >
 
     <task
         name="javac"
-        duration="248" />
+        duration="555" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="46" />
+        duration="126" />
     <task
         name="verifier"
-        duration="2" />
+        duration="4" />
 
     <artifact
-        location="/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/dex/debug/folders/1000/5/slice_7/classes.dex"
+        location="/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/dex/debug/folders/1000/5/slice_1/classes.dex"
+        type="DEX" />
+    <artifact
+        location="/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/dex/debug/folders/1000/5/slice_0/classes.dex"
+        type="DEX" />
+    <artifact
+        location="/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/dex/debug/folders/1000/5/slice_8/classes.dex"
         type="DEX" />
 
-    <build timestamp="873951977368586" >
+    <build timestamp="10101485928821" >
         <artifact
             location="/Users/sun/AndroidStudioProjects/EveryCAU/app/build/outputs/apk/app-debug.apk"
             type="MAIN" />
     </build>
-    <build timestamp="874130738027043" >
+    <build timestamp="11144356326028" >
         <artifact
-            location="/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/dex/debug/folders/1000/5/slice_7/classes.dex"
+            location="/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/dex/debug/folders/1000/5/slice_1/classes.dex"
+            type="DEX" />
+        <artifact
+            location="/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/dex/debug/folders/1000/5/slice_0/classes.dex"
+            type="DEX" />
+        <artifact
+            location="/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/dex/debug/folders/1000/5/slice_8/classes.dex"
             type="DEX" />
     </build>
 

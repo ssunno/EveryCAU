@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="colorPrimary">#7ECEFD</color>
     <color name="colorPrimaryDark">#2185C5</color>
     <color name="colorAccent">#ff7f66</color>
@@ -7,4 +8,13 @@
     <color name="textColorPrimary">#EEEEEE</color>
     <color name="textColorSecondary">#E0E0E0</color>
     <color name="textColorTertiary">#BDBDBD</color>
+    <!--
+    <color name="colorPrimary">#3498DB</color>
+    <color name="colorPrimaryDark">#2980B9</color>
+    <color name="colorAccent">#E74C3C</color>
+    <color name="colorBackground">#ECF0F1</color>
+    <color name="textColorPrimary">#2C3E50</color>
+    <color name="textColorSecondary">#435F7A</color>
+    <color name="textColorTertiary">#587DA1</color>
+    -->
 </resources>

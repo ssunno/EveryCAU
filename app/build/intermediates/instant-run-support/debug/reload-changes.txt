@@ -1,4 +1,5 @@
 CHANGED,/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/com/android/tools/fd/runtime/AppPatchesLoaderImpl.class
-CHANGED,/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/univ/cau/ssunno/everycau/MainTabActivity$SectionsPagerAdapter$override.class
-CHANGED,/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/univ/cau/ssunno/everycau/MainTabActivity$1$override.class
-CHANGED,/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/univ/cau/ssunno/everycau/MainTabActivity$override.class
+CHANGED,/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/univ/cau/ssunno/everycau/meals/MealsRecycleAdapter$override.class
+CHANGED,/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/univ/cau/ssunno/everycau/utils/database/Constant$override.class
+CHANGED,/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/univ/cau/ssunno/everycau/utils/network/CafeteriaManager$1$override.class
+CHANGED,/Users/sun/AndroidStudioProjects/EveryCAU/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/univ/cau/ssunno/everycau/utils/network/CafeteriaManager$override.class

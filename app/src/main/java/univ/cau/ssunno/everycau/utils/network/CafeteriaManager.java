@@ -1,8 +1,5 @@
 package univ.cau.ssunno.everycau.utils.network;
 
-
-import android.util.Log;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -21,21 +18,30 @@ public class CafeteriaManager {
     }
 
     // 해당 날짜, 해당 타임의 식단 정보
-    public ArrayList<CafeteriaInfo> getMeals(String date){
+    public ArrayList<CafeteriaInfo> getMeals(String date, int quarter){
+        DatabaseHelper dbHelper = DatabaseHelper.getInstance(null);
+        ArrayList<CafeteriaInfo> meals;
+        meals = dbHelper.getMenusFromDB(Constant.CAMPUS_SEOUL, getQuarterByCurrentTime(quarter), date);
+        for (CafeteriaInfo ci : dbHelper.getMenusFromDB(Constant.CAMPUS_SEOUL, Constant.QUARTER_ALLDAY, date)) meals.add(ci);
+        return meals;
+    }
+
+    public void updateCafeteria() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
-                    syncCafeteria("20160718", Constant.CAFE_DORMITORY);
-                    syncCafeteria("20160718", Constant.CAFE_SEULKI);
+                    String currentTime = Constant.getCurrentDate();
+                    syncCafeteria(currentTime, Constant.CAFE_DORMITORY);
+                    syncCafeteria(currentTime, Constant.CAFE_SEULKI);
+                    syncCafeteria(currentTime, Constant.CAFE_CHARM);
+                    syncCafeteria(currentTime, Constant.CAFE_STUDENT);
+                    syncCafeteria(currentTime, Constant.CAFE_EMPOLYEE);
+                    syncCafeteria(currentTime, Constant.CAFE_UNIVERSITY);
+                    syncCafeteria(currentTime, Constant.CAFE_NEW_DORMITORY);
                 } catch ( Exception e) {e.printStackTrace();}
             }
         }).start();
-        DatabaseHelper dbHelper = DatabaseHelper.getInstance(null);
-        ArrayList<CafeteriaInfo> meals;
-        meals = dbHelper.getMenusFromDB(Constant.CAMPUS_SEOUL, Constant.QUARTER_LUNCH, date);
-        for (CafeteriaInfo ci : dbHelper.getMenusFromDB(Constant.CAMPUS_SEOUL, Constant.QUARTER_ALLDAY, date)) meals.add(ci);
-        return meals;
     }
 
     private void syncCafeteria(String date, int code) throws Exception{
@@ -78,9 +84,11 @@ public class CafeteriaManager {
                                 dishList.remove(0);
 
                                 DatabaseHelper dbHelper = DatabaseHelper.getInstance(null);
-                                int c_id = dbHelper.insertCafeteria(getCampusByCafeteria(code), code, date, quarter);
-                                int m_id = dbHelper.insertMenu(c_id, style, price, calorie);
-                                for (String dish : dishList) dbHelper.insertDish(m_id, dish);
+                                if ( !price.equals("0 원") ){
+                                    int c_id = dbHelper.insertCafeteria(getCampusByCafeteria(code), code, date, quarter);
+                                    int m_id = dbHelper.insertMenu(c_id, style, price, calorie);
+                                    for (String dish : dishList) dbHelper.insertDish(m_id, dish);
+                                }
 
                                 style = null;
                                 price = null;
@@ -136,6 +144,14 @@ public class CafeteriaManager {
         return str.split("\\)")[0];
     }
 
+    private int getQuarterByCurrentTime(int currentTime) {
+        if ( currentTime < 600 ) // AM 10:00
+            return Constant.QUARTER_BREAKFAST;
+        else if ( currentTime < 900) // 15:00
+            return Constant.QUARTER_LUNCH;
+        else // 20:00
+            return Constant.QUARTER_DINNER;
+    }
     private int getCampusByCafeteria(int cafeteria) {
         int campus;
         switch(cafeteria) {
