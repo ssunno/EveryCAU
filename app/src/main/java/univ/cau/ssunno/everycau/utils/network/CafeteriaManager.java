@@ -31,14 +31,15 @@ public class CafeteriaManager {
             @Override
             public void run() {
                 try{
-                    String currentTime = Constant.getCurrentDate();
-                    syncCafeteria(currentTime, Constant.CAFE_DORMITORY);
-                    syncCafeteria(currentTime, Constant.CAFE_SEULKI);
-                    syncCafeteria(currentTime, Constant.CAFE_CHARM);
-                    syncCafeteria(currentTime, Constant.CAFE_STUDENT);
-                    syncCafeteria(currentTime, Constant.CAFE_EMPOLYEE);
-                    syncCafeteria(currentTime, Constant.CAFE_UNIVERSITY);
-                    syncCafeteria(currentTime, Constant.CAFE_NEW_DORMITORY);
+                    String currentDate = Constant.getCurrentDate();
+                    // TODO : 오늘 날짜의 식단 받아오는 기능. -> 이후 3일의 식단 데이터 받아오는 것으로 변경 해야함
+                    syncCafeteria(currentDate, Constant.CAFE_DORMITORY);
+                    syncCafeteria(currentDate, Constant.CAFE_SEULKI);
+                    syncCafeteria(currentDate, Constant.CAFE_CHARM);
+                    syncCafeteria(currentDate, Constant.CAFE_STUDENT);
+                    syncCafeteria(currentDate, Constant.CAFE_EMPOLYEE);
+                    syncCafeteria(currentDate, Constant.CAFE_UNIVERSITY);
+                    syncCafeteria(currentDate, Constant.CAFE_NEW_DORMITORY);
                 } catch ( Exception e) {e.printStackTrace();}
             }
         }).start();

@@ -7,14 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 import univ.cau.ssunno.everycau.utils.network.CafeteriaInfo;
-import univ.cau.ssunno.everycau.utils.network.MenuInfo;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    // TODO : 서울, 안성 등의 코드를 따로 관리해야함
-    // TODO : DB에 메뉴, 식사가 중복으로 insert 되지 않도록 관리해야함
-    // TODO : 같은 service_time( 조식/중식 등 ) 이지만 시간만 다른 경우가 있다.
-    public static final int SEOUL = 0;
-    public static final int ANSUNG = 1;
     private SQLiteDatabase db = null;
     private static volatile DatabaseHelper dbHelperInstance = null;
 
@@ -35,7 +29,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // quarter : 분기 표시, 0: 종일, 1:조식, 2:중식, 3:석식
         db.execSQL("CREATE TABLE CAFETERIA( c_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "campus INTEGER, code INTEGER, date TEXT, quarter INTEGER);");
         db.execSQL("CREATE TABLE MENUS( m_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
