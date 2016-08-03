@@ -71,22 +71,44 @@ public class CafeteriaManager {
         ArrayList<String> dishList = new ArrayList<>();
         int quarter = 0;
         while (eventType != XmlPullParser.END_DOCUMENT){
-            switch (eventType){
+            switch (eventType) {
                 case XmlPullParser.START_TAG:
                     tagName = xmlPullParser.getName();
                     break;
                 case XmlPullParser.END_TAG:
-                    tagName = "";
+                    tagName = xmlPullParser.getName();
+
+                    if(tagName.equals("root")){
+                        if (style != null && price != null) {
+                            calorie = dishList.get(0);
+                            dishList.remove(0);
+
+                            DatabaseHelper dbHelper = DatabaseHelper.getInstance(null);
+                            if (!price.equals("0 원")) {
+                                int c_id = dbHelper.insertCafeteria(getCampusByCafeteria(code), code, date, quarter);
+                                int m_id = dbHelper.insertMenu(c_id, style, price, calorie);
+                                for (String dish : dishList) dbHelper.insertDish(m_id, dish);
+                            }
+
+                            style = null;
+                            price = null;
+                            dishList = new ArrayList<>();
+                        }
+                    }
+                    else{
+                        tagName="";
+                    }
+
                     break;
                 case XmlPullParser.TEXT:
-                    switch (tagName){
+                    switch (tagName) {
                         case "raw":
-                            if( style != null && price != null) {
+                            if (style != null && price != null) {
                                 calorie = dishList.get(0);
                                 dishList.remove(0);
 
                                 DatabaseHelper dbHelper = DatabaseHelper.getInstance(null);
-                                if ( !price.equals("0 원") ){
+                                if (!price.equals("0 원")) {
                                     int c_id = dbHelper.insertCafeteria(getCampusByCafeteria(code), code, date, quarter);
                                     int m_id = dbHelper.insertMenu(c_id, style, price, calorie);
                                     for (String dish : dishList) dbHelper.insertDish(m_id, dish);
@@ -101,27 +123,64 @@ public class CafeteriaManager {
                         case "menunm":
                             String[] menunm = xmlPullParser.getText().split("\\(");
 
-                            try{
-                                switch(menunm[0]) {
+                            try {
+                                switch (menunm[0]) {
 
                                     // 앞쪽이 쿼터인 경우 -> 뒤쪽은 스타일
-                                    case "조식": quarter = Constant.QUARTER_BREAKFAST; style = cleanStr(menunm[1]); break;
-                                    case "중식": quarter = Constant.QUARTER_LUNCH; style = cleanStr(menunm[1]); break;
-                                    case "석식": quarter = Constant.QUARTER_DINNER; style = cleanStr(menunm[1]); break;
+                                    case "조식":
+                                        quarter = Constant.QUARTER_BREAKFAST;
+                                        style = cleanStr(menunm[1]);
+                                        break;
+                                    case "중식":
+                                        quarter = Constant.QUARTER_LUNCH;
+                                        style = cleanStr(menunm[1]);
+                                        break;
+                                    case "석식":
+                                        quarter = Constant.QUARTER_DINNER;
+                                        style = cleanStr(menunm[1]);
+                                        break;
                                     // 뒤쪽이 쿼터인 경우 -> 앞족은 스타일
                                     default:
-                                        switch(cleanStr(menunm[1])) {
-                                            case "조식": quarter = Constant.QUARTER_BREAKFAST; style = menunm[0]; break;
-                                            case "특식": case "중식": quarter = Constant.QUARTER_LUNCH; style = menunm[0]; break;
-                                            case "석식":case "학생석식": quarter = Constant.QUARTER_DINNER; style = menunm[0]; break;
-                                            default: quarter = Constant.QUARTER_ALLDAY; style = cleanStr(menunm[1]); break;
+                                        switch (cleanStr(menunm[1])) {
+                                            case "조식":
+                                                quarter = Constant.QUARTER_BREAKFAST;
+                                                style = menunm[0];
+                                                break;
+                                            case "특식":
+                                            case "중식":
+                                                quarter = Constant.QUARTER_LUNCH;
+                                                style = menunm[0];
+                                                break;
+                                            case "석식":
+                                            case "학생석식":
+                                                quarter = Constant.QUARTER_DINNER;
+                                                style = menunm[0];
+                                                break;
+                                            default:
+                                                quarter = Constant.QUARTER_ALLDAY;
+                                                style = cleanStr(menunm[1]);
+                                                break;
                                         }
-                                }} catch (ArrayIndexOutOfBoundsException e) { // 하나만 기재되는 경우
-                                switch(cleanStr(menunm[0])) {
-                                    case "조식": quarter = Constant.QUARTER_BREAKFAST; style = menunm[0]; break;
-                                    case "중식": quarter = Constant.QUARTER_LUNCH; style = menunm[0]; break;
-                                    case "석식":case "학생석식": quarter = Constant.QUARTER_DINNER; style = menunm[0]; break;
-                                    default: quarter = Constant.QUARTER_ALLDAY; style = menunm[0]; break;
+                                }
+                            } catch (ArrayIndexOutOfBoundsException e) { // 하나만 기재되는 경우
+                                switch (cleanStr(menunm[0])) {
+                                    case "조식":
+                                        quarter = Constant.QUARTER_BREAKFAST;
+                                        style = menunm[0];
+                                        break;
+                                    case "중식":
+                                        quarter = Constant.QUARTER_LUNCH;
+                                        style = menunm[0];
+                                        break;
+                                    case "석식":
+                                    case "학생석식":
+                                        quarter = Constant.QUARTER_DINNER;
+                                        style = menunm[0];
+                                        break;
+                                    default:
+                                        quarter = Constant.QUARTER_ALLDAY;
+                                        style = menunm[0];
+                                        break;
                                 }
                             }
                             break;
